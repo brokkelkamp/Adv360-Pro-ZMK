@@ -47,36 +47,148 @@
   keymap {
     compatible = "zmk,keymap";
 
+    /*
+     * Layer 0: Base (Default)
+     *
+     *        ┌────┬────┬────┬────┬────┬────┬────┐                           ┌────┬────┬────┬────┬────┬────┬────┐
+     *        │ =  │ 1  │ 2  │ 3  │ 4  │ 5  │TG 1│                           │MO 3│ 6  │ 7  │ 8  │ 9  │ 0  │ -  │
+     *        ├────┼────┼────┼────┼────┼────┼────┤                           ├────┼────┼────┼────┼────┼────┼────┤
+     *        │TAB │ Q  │ W  │ E  │ R  │ T  │    │                           │ C← │ Y  │ U  │ I  │ O  │ P  │ \  │
+     *        ├────┼────┼────┼────┼────┼────┼────┤                           ├────┼────┼────┼────┼────┼────┼────┤
+     *        │ESC │ A  │ S  │ D  │ F  │ G  │C-A↵│                           │ C→ │ H  │ J  │ K  │ L  │ ;  │ '  │
+     *        ├────┼────┼────┼────┼────┼────┼────┤                           ├────┼────┼────┼────┼────┼────┼────┤
+     *        │LSFT│ Z  │ X  │ C  │ V  │ B  │    │                           │    │ N  │ M  │ ,  │ .  │ /  │RSFT│
+     *        ├────┼────┼────┼────┼────┼────┴────┘                           └────┴────┼────┼────┼────┼────┼────┤
+     *        │MO 2│ `  │CAPS│ ←  │ →  │                                               │ ↑  │ ↓  │ [  │ ]  │MO 2│
+     *        └────┴────┴────┴────┴────┘                                               └────┴────┴────┴────┴────┘
+     *
+     *                                           ┌────┬────┐      ┌────┬────┐
+     *                                           │LGUI│LALT│      │RCTL│RGUI│
+     *                                           └────┴────┘      └────┴────┘
+     *                                      ┌────┬────┐┌────┐     ┌────┐┌────┬────┐
+     *                                      │    │    ││HOME│     │PGUP││    │    │
+     *                                      │ SPC│MO 2│├────┤     ├────┤│BSPC│ ENT│
+     *                                      │    │    ││ END│     │PGDN││    │    │
+     *                                      └────┴────┘└────┘     └────┘└────┴────┘
+     */
     default_layer {
       display-name = "Base";
       bindings = <
         &kp EQUAL &kp N1    &kp N2   &kp N3   &kp N4     &kp N5 &tog 1                                                           &mo 3 &kp N6 &kp N7 &kp N8    &kp N9   &kp N0   &kp MINUS
-        &kp TAB   &kp Q     &kp W    &kp E    &kp R      &kp T  &none                                                            &none &kp Y  &kp U  &kp I     &kp O    &kp P    &kp BSLH
-        &esc_ctrl LCTRL ESC &hml LGUI A &hml LALT S &hml LCTRL D &hml LSHFT F &kp G  &none           &kp DEL   &kp LALT &kp RCTRL &kp RGUI            &none &kp H  &hmr RSHFT J &hmr RCTRL K &hmr RALT L &hmr RGUI SEMI &kp SQT
+        &kp TAB   &kp Q     &kp W    &kp E    &kp R      &kp T  &none                                                            &kp LC(LEFT) &kp Y  &kp U  &kp I     &kp O    &kp P    &kp BSLH
+        &esc_ctrl LCTRL ESC &hml LCTRL A &hml LALT S &hml LGUI D &hml LSHFT F &kp G  &kp LC(LA(RET))           &kp LGUI   &kp LALT &kp RCTRL &kp RGUI            &kp LC(RIGHT) &kp H  &hmr RSHFT J &hmr RGUI K &hmr RALT L &hmr RCTRL SEMI &kp SQT
         &kp LSHFT &kp Z     &kp X    &kp C    &kp V      &kp B                            &kp HOME &kp PG_UP                           &kp N  &kp M  &kp COMMA &kp DOT  &kp FSLH &kp RSHFT
-        &mo 2     &kp GRAVE &kp CAPS &kp LEFT &kp RIGHT                &kp SPACE &kp LGUI  &kp END  &kp PG_DN &kp BSPC  &kp ENTER              &kp UP &kp DOWN  &kp LBKT &kp RBKT &mo 2
+        &mo 2     &kp GRAVE &kp CAPS &kp LEFT &kp RIGHT                &kp SPACE &mo 2  &kp END  &kp PG_DN &kp BSPC  &kp ENTER              &kp UP &kp DOWN  &kp LBKT &kp RBKT &mo 2
       >;
     };
+
+    /*
+     * Layer 1: Keypad
+     *
+     *        ┌────┬────┬────┬────┬────┬────┬────┐               ┌────┬────┬────┬────┬────┬────┬────┐
+     *        │ =  │ 1  │ 2  │ 3  │ 4  │ 5  │▼▼▼ │               │MO 3│ 6  │NUM │ =  │ /  │ *  │ -  │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │TAB │ Q  │ W  │ E  │ R  │ T  │    │               │    │ Y  │ 7  │ 8  │ 9  │ -  │ \  │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │ESC │ A  │ S  │ D  │ F  │ G  │    │               │    │ H  │ 4  │ 5  │ 6  │ +  │ '  │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │LSFT│ Z  │ X  │ C  │ V  │ B  │    │               │    │ N  │ 1  │ 2  │ 3  │ ENT│RSFT│
+     *        ├────┼────┼────┼────┼────┼────┴────┘               └────┴────┼────┼────┼────┼────┼────┤
+     *        │MO 2│ `  │CAPS│ ←  │ →  │                                   │ ↑  │ ↓  │ .  │ ]  │MO 2│
+     *        └────┴────┴────┴────┴────┘                                   └────┴────┴────┴────┴────┘
+     *
+     *                          ┌────┬────┐               ┌────┬────┐
+     *                          │LGUI│LALT│               │RCTL│RGUI│
+     *                          └────┴────┘               └────┴────┘
+     *                     ┌────┬────┐┌────┐         ┌────┐┌────┬────┐
+     *                     │    │    ││HOME│         │PGUP││    │    │
+     *                     │ SPC│MO 2│├────┤         ├────┤│BSPC│ 0  │
+     *                     │    │    ││ END│         │PGDN││    │    │
+     *                     └────┴────┘└────┘         └────┘└────┴────┘
+     */
     keypad {
       display-name = "Kp";
       bindings = <
         &kp EQUAL &kp N1    &kp N2   &kp N3   &kp N4     &kp N5 &trans                                                           &mo 3 &kp N6 &kp KP_NUM &kp KP_EQUAL &kp KP_DIVIDE &kp KP_MULTIPLY &kp MINUS
         &kp TAB   &kp Q     &kp W    &kp E    &kp R      &kp T  &none                                                            &none &kp Y  &kp KP_N7  &kp KP_N8    &kp KP_N9     &kp KP_MINUS    &kp BSLH
-        &esc_ctrl LCTRL ESC &hml LGUI A &hml LALT S &hml LCTRL D &hml LSHFT F &kp G  &none           &kp DEL   &kp LALT &kp RCTRL &kp RGUI            &none &kp H  &hmr RSHFT KP_N4 &hmr RCTRL KP_N5 &hmr RALT KP_N6 &hmr RGUI KP_PLUS &kp SQT
+        &esc_ctrl LCTRL ESC &hml LGUI A &hml LALT S &hml LCTRL D &hml LSHFT F &kp G  &none           &kp LGUI   &kp LALT &kp RCTRL &kp RGUI            &none &kp H  &hmr RSHFT KP_N4 &hmr RCTRL KP_N5 &hmr RALT KP_N6 &hmr RGUI KP_PLUS &kp SQT
         &kp LSHFT &kp Z     &kp X    &kp C    &kp V      &kp B                            &kp HOME &kp PG_UP                           &kp N  &kp KP_N1  &kp KP_N2    &kp KP_N3     &kp KP_ENTER    &kp RSHFT
-        &mo 2     &kp GRAVE &kp CAPS &kp LEFT &kp RIGHT                &kp SPACE &kp LGUI  &kp END  &kp PG_DN &kp BSPC  &kp KP_N0              &kp UP     &kp DOWN     &kp KP_DOT    &kp RBKT        &mo 2
+        &mo 2     &kp GRAVE &kp CAPS &kp LEFT &kp RIGHT                &kp SPACE &mo 2  &kp END  &kp PG_DN &kp BSPC  &kp KP_N0              &kp UP     &kp DOWN     &kp KP_DOT    &kp RBKT        &mo 2
       >;
     };
+
+    /*
+     * Layer 2: Function (Fn)
+     *
+     *        ┌────┬────┬────┬────┬────┬────┬────┐               ┌────┬────┬────┬────┬────┬────┬────┐
+     *        │ F1 │ F2 │ F3 │ F4 │ F5 │ F6 │TG 1│               │MO 3│ F7 │ F8 │ F9 │F10 │F11 │F12 │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │▼▼▼ │ ~  │ [  │ ]  │ {  │ }  │    │               │    │ -  │ +  │ ↑  │▼▼▼ │▼▼▼ │▼▼▼ │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │▼▼▼ │▼▼▼ │ <  │ >  │ (  │ )  │    │               │    │ ←  │ ↓  │ ↑  │ →  │▼▼▼ │▼▼▼ │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │    │               │    │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │
+     *        ├────┼────┼────┼────┼────┼────┴────┘               └────┴────┼────┼────┼────┼────┼────┤
+     *        │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │                                   │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │▼▼▼ │
+     *        └────┴────┴────┴────┴────┘                                   └────┴────┴────┴────┴────┘
+     *
+     *                          ┌────┬────┐               ┌────┬────┐
+     *                          │▼▼▼ │▼▼▼ │               │▼▼▼ │▼▼▼ │
+     *                          └────┴────┘               └────┴────┘
+     *                     ┌────┬────┐┌────┐         ┌────┐┌────┬────┐
+     *                     │    │    ││▼▼▼ │         │▼▼▼ ││    │    │
+     *                     │▼▼▼ │▼▼▼ │├────┤         ├────┤│▼▼▼ │▼▼▼ │
+     *                     │    │    ││▼▼▼ │         │▼▼▼ ││    │    │
+     *                     └────┴────┘└────┘         └────┘└────┴────┘
+     *
+     * ▼▼▼ = transparent/pass-through from base layer
+     */
     fn {
       display-name = "Fn";
       bindings = <
-        &kp F1 &kp F2 &kp F3 &kp F4 &kp F5 &kp F6 &tog 1                                           &mo 3 &kp F7 &kp F8 &kp F9 &kp F10 &kp F11 &kp F12
-        &trans &trans &trans &trans &trans &trans  &none                                           &none &trans &trans &trans &trans  &trans  &trans
-        &trans &trans &trans &trans &trans &trans  &none        &trans &trans &trans &trans        &none &trans &trans &trans &trans  &trans  &trans
-        &trans &trans &trans &trans &trans &trans                      &trans &trans                     &trans &trans &trans &trans  &trans  &trans
-        &trans &trans &trans &trans &trans               &trans &trans &trans &trans &trans &trans              &trans &trans &trans  &trans  &trans
+        &kp F1    &kp F2    &kp F3       &kp F4       &kp F5       &kp F6 &tog 1                                           &mo 3 &kp F7   &kp F8     &kp F9   &kp F10 &kp F11 &kp F12
+        &trans    &kp TILDE &kp LBKT     &kp RBKT     &kp LBRC     &kp RBRC  &none                                           &none &kp MINUS   &kp PLUS     &kp UP   &trans  &trans  &trans
+        &trans    &trans    &kp LT       &kp GT       &kp LPAR     &kp RPAR  &none        &trans &trans &trans &trans        &none &kp LEFT &kp DOWN   &kp UP   &kp RIGHT &trans  &trans
+        &trans    &trans    &trans       &trans       &trans       &trans                      &trans &trans                     &trans   &trans     &trans   &trans  &trans  &trans
+        &trans    &trans    &trans       &trans       &trans                     &trans &trans &trans &trans &trans &trans              &trans     &trans   &trans  &trans  &trans
       >;
     };
+
+    /*
+     * Layer 3: Mod (System/Control)
+     *
+     *        ┌────┬────┬────┬────┬────┬────┬────┐               ┌────┬────┬────┬────┬────┬────┬────┐
+     *        │    │BT 0│BT 1│BT 2│BT 3│BT 4│    │               │▼▼▼ │    │    │    │    │    │    │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │    │    │    │    │    │    │BOOT│               │BOOT│    │    │    │    │    │    │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │STDO│    │    │    │    │    │    │               │    │ BAT│    │    │    │    │    │
+     *        ├────┼────┼────┼────┼────┼────┼────┤               ├────┼────┼────┼────┼────┼────┼────┤
+     *        │    │    │    │    │ VER│    │    │               │    │    │    │    │    │    │    │
+     *        ├────┼────┼────┼────┼────┼────┴────┘               └────┴────┼────┼────┼────┼────┼────┤
+     *        │    │    │    │    │    │                                   │BL+ │BL- │    │    │    │
+     *        └────┴────┴────┴────┴────┘                                   └────┴────┴────┴────┴────┘
+     *
+     *                          ┌────┬────┐               ┌────┬────┐
+     *                          │    │    │               │    │BTCR│
+     *                          └────┴────┘               └────┴────┘
+     *                     ┌────┬────┐┌────┐         ┌────┐┌────┬────┐
+     *                     │    │    ││    │         │    ││    │    │
+     *                     │    │    │├────┤         ├────┤│BLTG│RGBT│
+     *                     │    │    ││    │         │    ││    │    │
+     *                     └────┴────┘└────┘         └────┘└────┴────┘
+     *
+     * Legend:
+     * BT 0-4: Bluetooth profile select (0-4)
+     * BOOT: Enter bootloader mode
+     * STDO: Studio unlock
+     * BTCR: Bluetooth clear
+     * BAT: Show battery status
+     * VER: Display firmware version
+     * BL+/BL-: Backlight increase/decrease
+     * BLTG: Backlight toggle
+     * RGBT: RGB underglow toggle
+     */
     mod {
       display-name = "Mod";
       bindings = <
